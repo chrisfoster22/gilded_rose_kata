@@ -27,6 +27,7 @@ def update_quality(items)
     conjured.each do |c|
         unless c.quality == 0
             c.quality -= 2
+            c.quality -= 2 if c.sell_in < 1
         end
     end
 
