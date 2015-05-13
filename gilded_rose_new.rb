@@ -9,9 +9,7 @@ class QualityUpdater
     items.each do |i|
       i.quality -= 1 
       i.quality -= 1 if i.sell_in <= 0
-      AgedUpdater.new.update(i) if i.name.include?('Aged')
-      ConcertUpdater.new.update(i) if i.name.include?('concert')
-      ConjuredUpdater.new.update(i) if i.name.include?('Conjured')
+      choose_updater(i)
       i.sell_in -= 1
       reset_item(i)
     end 
@@ -20,6 +18,12 @@ class QualityUpdater
   def reset_item(item)
     item.quality = 0 if item.quality < 0
     item.quality = 50 if item.quality > 50
+  end
+
+  def choose_updater(item)
+      AgedUpdater.new.update(item) if item.name.include?('Aged')
+      ConcertUpdater.new.update(item) if item.name.include?('concert')
+      ConjuredUpdater.new.update(item) if item.name.include?('Conjured')
   end
 end
 
