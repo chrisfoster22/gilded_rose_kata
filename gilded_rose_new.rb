@@ -10,7 +10,7 @@ class QualityUpdater
       i.quality -= 1 
       i.quality -= 1 if i.sell_in <= 0
       AgedUpdater.new.update(i) if i.name.include?('Aged')
-     ConcertUpdater.new.update(i) if i.name.include?('concert')
+      ConcertUpdater.new.update(i) if i.name.include?('concert')
       ConjuredUpdater.new.update(i) if i.name.include?('Conjured')
       i.sell_in -= 1
       reset_item(i)
