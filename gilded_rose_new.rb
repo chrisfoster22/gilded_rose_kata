@@ -1,56 +1,44 @@
 def update_quality(items)
-    sulfuras = items.find { |i| i.name.include?("Sulfuras") }
-    items.delete(sulfuras)
-  QualityUpdater.new.update(items)
+  items.each { |i| i.updater unless name.include?("Sulfuras") }    
 end
 
-class QualityUpdater
-  def update(items)
-    items.each do |i|
-      i.quality -= 1 
-      i.quality -= 1 if i.sell_in <= 0
-      choose_updater(i)
-      i.sell_in -= 1
-      reset_item(i)
-    end 
+class Item
+  attr_accessor :name, :quality, :sell_in
+ 
+  def initialize(name, sell_in, quality)
+    @name = name
+    @quality = quality
+    @sell_in = sell_in
   end
 
-  def reset_item(item)
-    item.quality = 0 if item.quality < 0
-    item.quality = 50 if item.quality > 50
+  def updater
+    @sell_in -= 1 
+    normal_updater if name.include?("NORMAL")
+    aged_updater if name.include?("Aged")
+    concert_updater if name.include?("concert")
+    conjured_updater if name.include?("Conjured")
+    @quality = 50 if quality > 50
   end
-
-  def choose_updater(item)
-      AgedUpdater.new.update(item) if item.name.include?('Aged')
-      ConcertUpdater.new.update(item) if item.name.include?('concert')
-      ConjuredUpdater.new.update(item) if item.name.include?('Conjured')
-  end
-end
-
-class AgedUpdater
-  def update(item)
-    item.quality += 2
-    item.quality += 2 if item.sell_in <= 0
-  end
-end
-
-class ConcertUpdater
-  def update(item)
-    item.quality += 2 
-    item.quality += 1 if item.sell_in < 11
-    item.quality += 1 if item.sell_in < 6
-    item.quality = 0 if item.sell_in < 1
-  end
-end
-
-class ConjuredUpdater
-  def update(item)
-    item.quality -= 1
-    item.quality -= 1 if item.sell_in < 1
-  end
-end
     
+  def normal_updater
+    sell_in < 1 ? @quality -= 2 : @quality -= 1
+    @quality = 0 if quality < 0
+  end
 
+  def aged_updater
+    @quality += 1
+    @quality += 1 if sell_in < 1
+  end
 
+  def concert_updater
+    sell_in > 9 ? @quality += 1 : @quality += 2 
+    @quality += 1 if sell_in < 5
+    @quality = 0 if sell_in < 0
+  end
 
-Item = Struct.new(:name, :sell_in, :quality)
+  def conjured_updater
+    sell_in < 0 ? @quality -= 4 : @quality -= 2
+    @quality = 0 if @quality < 0
+  end
+
+end
